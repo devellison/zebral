@@ -2,6 +2,7 @@
 /// Unit test for shared library - just make sure it's connecting with the shared lib.
 /// Static libraries have the bulk of tests.
 
+#include "zebral.hpp"
 #include "camera_manager.hpp"
 #include "camera_platform.hpp"
 #include "convert.hpp"
@@ -11,11 +12,11 @@
 #include "log.hpp"
 #include "param.hpp"
 #include "platform.hpp"
-
 using namespace zebral;
 
 TEST(ZebralTest, SanityCheck)
 {
+  std::cout << "Zebral version: " << ZebralVersion() << std::endl;
   // Sanity check on errors
   ASSERT_TRUE(Failed(Result::ZBA_ERROR));
   ASSERT_TRUE(Failed(Result::ZBA_UNKNOWN_ERROR));

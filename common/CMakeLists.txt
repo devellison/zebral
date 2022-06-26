@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(
   zebralcommon
-  VERSION 0.0.2
+  VERSION ${ZEBRAL_VERSION}
   LANGUAGES CXX
 )
 

@@ -1,10 +1,12 @@
 # Zebral libraries
 cmake_minimum_required(VERSION 3.20)
 
+set(ZEBRAL_VERSION "0.0.3")
+
 # But it might be nice to have one big shared library of it all...
 project(
   zebral
-  VERSION 0.0.2
+  VERSION ${ZEBRAL_VERSION}
   LANGUAGES CXX
 )
 
@@ -156,7 +158,7 @@ target_link_libraries(
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 target_compile_definitions(
-  ${PROJECT_NAME} PUBLIC LIGHTBOX_VERSION="${PROJECT_VERSION}"
+  ${PROJECT_NAME} PUBLIC ZEBRAL_VERSION="${ZEBRAL_VERSION}"
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})

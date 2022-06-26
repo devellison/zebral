@@ -2,9 +2,9 @@
 #include "zebral.hpp"
 #include "platform.hpp"
 
-static const char* ZEBRAL_VERSION = LIGHTBOX_VERSION;
+static const char* kZEBRAL_VERSION = ZEBRAL_VERSION;
 
 const char* ZebralVersion()
 {
-  return ZEBRAL_VERSION;
+  return kZEBRAL_VERSION;
 }

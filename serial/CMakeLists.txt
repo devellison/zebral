@@ -1,7 +1,7 @@
 # ZebralSerial library Simple serial comms
 project(
   zebralserial
-  VERSION 0.0.2
+  VERSION ${ZEBRAL_VERSION}
   LANGUAGES CXX
 )
 
