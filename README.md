@@ -14,5 +14,5 @@ Zebral is being written as a part of the Lightbox project, but it's intended to 
 alone as well once it's done.
 
 You should be able to build this directory solo, or integrate it easily with other projects.
-Check out the (Lightbox Project)[https://github.com/devellison/lightbox] for an example.
+Check out the [Lightbox Project](https://github.com/devellison/lightbox) for an example.
 
