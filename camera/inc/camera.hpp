@@ -18,19 +18,10 @@ namespace zebral
 {
 class Param;
 
-/// TimeStamp used by camera calls (high_resolution_clock)
-using TimeStamp = std::chrono::high_resolution_clock::time_point;
-
-/// Get the timestamp right now
-/// \return TimeStamp - current time_point on the high resolution clock
-TimeStamp TimeStampNow();
-
 /// Frame callback for hosts
 /// \param info - information about the camera
 /// \param image - CameraFrame containing image.
-/// \param timestamp - time the image was taken
-typedef std::function<void(const CameraInfo& info, const CameraFrame& image, TimeStamp timestamp)>
-    FrameCallback;
+typedef std::function<void(const CameraInfo& info, const CameraFrame& image)> FrameCallback;
 
 /// Camera interface / Base class
 /// This may be used as an asynchronous frame source (using the callback)

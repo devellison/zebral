@@ -77,7 +77,17 @@ class CameraPlatform::Impl
   /// \return true if vid/pid found.
   static bool VidPidFromBusPath(const std::string& busPath, uint16_t& vid, uint16_t& pid);
 
+  /// Called when a parameter is changed.
+  /// \param param - The parameter (May be ParamRanged or ParamMenu, etc.)
+  /// \param raw_set - if true, was set by hardware side. If false, set via scaled values from gui
+  /// \param auto_mode - if true, param is in / is being set to auto mode (for hardware/driver
+  ///                    automatic control). If false, is NOT in or is being disabled.
   void OnParamChanged(Param* param, bool raw_set, bool auto_mode);
+
+  /// Adds a named parameter to the class (stuff like Exposure, Brightness, etc.)
+  /// \param name - name of the parameter
+  /// \param ctrl - Control object
+  /// \param supportsAuto - If true, parameter supports automatic control
   void AddParameter(const std::string& name, MediaDeviceControl ctrl, bool supportsAuto);
 
   CameraPlatform& parent_;                       ///< CameraPlatform that owns this Impl
@@ -398,8 +408,15 @@ void CameraPlatform::Impl::OnFrame(
 {
   if (auto frame = reader.TryAcquireLatestFrame())
   {
+    // {TODO} Get an accurate timestamp from the frame
+    // {HACK} We'll likely have to convert between clocks.
+    // See this: https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
+    // For now, stamp when we acquire it.
+    TimeStamp frame_time = TimeStampNow();
+
     auto bitmap        = frame.VideoMediaFrame().SoftwareBitmap();
     auto format_if_set = parent_.GetFormat();
+
     if (format_if_set)
     {
       auto format            = *format_if_set;
@@ -431,7 +448,8 @@ void CameraPlatform::Impl::OnFrame(
 
         auto srcPtr = dataPtr;
         // my system stats
-        // (800, 448) is about 0.026s in debug mode, 0.0018s in release mode (no parallel, pure cpp)
+        // (800, 448) is about 0.026s in debug mode, 0.0018s in release mode (no parallel, pure
+        // cpp)
         if (format.format == "YUY2")
         {
           // ZBA_TIMER(timer, "YUY2ToBGRFrame");
@@ -466,6 +484,7 @@ void CameraPlatform::Impl::OnFrame(
 
       ref.Close();
       bmpBuffer.Close();
+      parent_.cur_frame_.set_timestamp(frame_time);
       parent_.OnFrameReceived(parent_.cur_frame_);
     }
     else

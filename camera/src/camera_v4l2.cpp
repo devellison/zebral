@@ -479,6 +479,10 @@ void CameraPlatform::Impl::CaptureThread()
 
     // Get a buffer
     if (!buffers_->Get(bufIdx).Dequeue()) continue;
+
+    /// {TODO} this needs to be pulled from the frame/system itself if available.
+    TimeStamp frame_timestamp = TimeStampNow();
+
     auto format_if_set = parent_.GetFormat();
     if (format_if_set)
     {
@@ -526,6 +530,8 @@ void CameraPlatform::Impl::CaptureThread()
         parent_.CopyRawBuffer(buffers_->Get(bufIdx).Data());
       }
     }
+
+    parent_.cur_frame_.set_timestamp(frame_timestamp);
     parent_.OnFrameReceived(parent_.cur_frame_);
 
     // Requeue buffer

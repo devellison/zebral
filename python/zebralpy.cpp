@@ -6,6 +6,7 @@
 #pragma warning(disable : 4189)
 #endif
 
+#include <pybind11/chrono.h>
 #include <pybind11/complex.h>
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
@@ -62,7 +63,7 @@ PYBIND11_MODULE(zebralpy, m)
 
   py::class_<CameraFrame>(m, "CameraFrame")
       .def(py::init<>())
-      .def(py::init<int, int, int, int, bool, bool, const uint8_t *>())
+      .def(py::init<int, int, int, int, bool, bool, TimeStamp, const uint8_t *>())
       .def("clear", &CameraFrame::clear)
       .def("reset", &CameraFrame::reset)
       .def("empty", &CameraFrame::empty)
@@ -73,6 +74,7 @@ PYBIND11_MODULE(zebralpy, m)
       .def("is_signed", &CameraFrame::is_signed)
       .def("is_floating", &CameraFrame::is_floating)
       .def("data_size", &CameraFrame::data_size)
+      .def("timestamp", &CameraFrame::get_timestamp)
       .def("data", [](CameraFrame &f) {
         return pybind11::array_t<unsigned char>({f.data_size()}, {1}, f.data());
       });
@@ -81,6 +83,22 @@ PYBIND11_MODULE(zebralpy, m)
       .def(py::init<>())
       .def("Enumerate", &CameraManager::Enumerate)
       .def("Create", &CameraManager::Create);
+// If the functions are made static, it seems to get a bit more complex.
+#if 0
+      .def("Enumerate",
+           [](CameraManager &mgr) {
+             auto result         = mgr.Enumerate();
+             py::list resultList = py::cast(result);
+             return resultList;
+           })
+      .def(
+          "Create",
+          [](CameraManager &mgr, const CameraInfo &info) {
+            auto result = mgr.Create(info);
+            return result;
+          },
+          py::return_value_policy::reference_internal);
+#endif // 0
 
   py::class_<CameraPlatform, std::shared_ptr<CameraPlatform>> camera(m, "Camera");
   camera.def(py::init<const CameraInfo &>())
