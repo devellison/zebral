@@ -3,6 +3,7 @@
 #ifndef LIGHTBOX_CAMERA_CAMERA_FRAME_HPP_
 #define LIGHTBOX_CAMERA_CAMERA_FRAME_HPP_
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -11,6 +12,12 @@
 
 namespace zebral
 {
+/// TimeStamp used by camera calls (high_resolution_clock)
+using TimeStamp = std::chrono::high_resolution_clock::time_point;
+/// Get the timestamp right now
+/// \return TimeStamp - current time_point on the high resolution clock
+TimeStamp TimeStampNow();
+
 /// Simple image class.
 /// This is meant as a very simple wrapper for an image grabbed from a camera.
 /// The intention is to not have the camera API depend on OpenCV, but to allow
@@ -32,20 +39,23 @@ class CameraFrame
         channels_(0),
         bytes_per_channel_(0),
         is_signed_(false),
-        is_floating_(false)
+        is_floating_(false),
+        timestamp_(TimeStampNow())
   {
   }
 
   /// Normal ctor - if data is provided, copies it into the vector.
   /// Otherwise, reserves space for it.
   CameraFrame(int width, int height, int channels, int bytesPerChannel, bool is_signed,
-              bool is_floating_point, const uint8_t* data = nullptr)
+              bool is_floating_point, TimeStamp timestamp = TimeStampNow(),
+              const uint8_t* data = nullptr)
       : width_(width),
         height_(height),
         channels_(channels),
         bytes_per_channel_(bytesPerChannel),
         is_signed_(is_signed),
-        is_floating_(is_floating_point)
+        is_floating_(is_floating_point),
+        timestamp_(timestamp)
   {
     /// {TODO} won't work with stepped/padded data.
     size_t dataSize = static_cast<size_t>(width_) * height_ * channels_ * bytes_per_channel_;
@@ -61,11 +71,12 @@ class CameraFrame
 
   void clear()
   {
-    reset(0, 0, 0, 0, 0, 0, nullptr);
+    reset(0, 0, 0, 0, 0, 0);
   }
 
   void reset(int width, int height, int channels, int bytesPerChannel, bool is_signed,
-             bool is_floating_point, const uint8_t* data = nullptr)
+             bool is_floating_point, TimeStamp timestamp = TimeStampNow(),
+             const uint8_t* data = nullptr)
   {
     width_             = width;
     height_            = height;
@@ -73,6 +84,7 @@ class CameraFrame
     bytes_per_channel_ = bytesPerChannel;
     is_signed_         = is_signed;
     is_floating_       = is_floating_point;
+    timestamp_         = timestamp;
 
     /// {TODO} won't work with stepped/padded data.
     size_t dataSize = static_cast<size_t>(width_) * height_ * channels_ * bytes_per_channel_;
@@ -194,6 +206,16 @@ class CameraFrame
     return false;
   }
 
+  TimeStamp get_timestamp() const
+  {
+    return timestamp_;
+  }
+
+  void set_timestamp(TimeStamp timestamp)
+  {
+    timestamp_ = timestamp;
+  }
+
  protected:
   int width_;                  ///< width of image in pixels
   int height_;                 ///< height of image in pixels
@@ -202,6 +224,7 @@ class CameraFrame
   bool is_signed_;             ///< is data a signed type?
   bool is_floating_;           ///< is data a floating type?
   std::vector<uint8_t> data_;  ///< Vector to store data
+  TimeStamp timestamp_;
 };
 
 }  // namespace zebral

@@ -43,20 +43,18 @@ bool Camera::IsRunning()
 
 void Camera::OnFrameReceived(const CameraFrame& frame)
 {
-  TimeStamp timestamp = TimeStampNow();
-
   // Update last frame and notify anyone waiting
   {
     std::lock_guard<std::mutex> lock(frame_mutex_);
     last_frame_     = frame;
-    last_timestamp_ = timestamp;
+    last_timestamp_ = frame.get_timestamp();
     cv_.notify_all();
   }
 
   // Call callback if provided
   if (callback_)
   {
-    callback_(info_, frame, timestamp);
+    callback_(info_, frame);
   }
 }
 
