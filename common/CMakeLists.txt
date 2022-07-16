@@ -24,11 +24,11 @@ if(OpenMP_CXX_FOUND)
 endif()
 
 set(SRC src/find_files.cpp src/platform.cpp src/errors.cpp src/log.cpp
-        src/store_error.cpp src/system_utils.cpp
+        src/store_error.cpp src/system_utils.cpp src/string_utils.cpp
 )
 
 set(INC inc/find_files.hpp inc/platform.hpp inc/errors.hpp inc/log.hpp
-        inc/store_error.hpp inc/system_utils.hpp
+        inc/store_error.hpp inc/system_utils.hpp inc/string_utils.hpp
 )
 
 add_library(${PROJECT_NAME} ${SRC} ${INC})

@@ -17,7 +17,9 @@ static constexpr size_t kMaxErrorLength = 256;
 /// Expect lightbox to be small.... if not, this needs TLC.
 enum class Result : uint32_t
 {
-  ZBA_SUCCESS       = 0,  ///< General success result
+  ZBA_SUCCESS = 0,  ///< General success result
+  ZBA_OK      = 0,  ///< Duplicate, used in firmware.
+
   ZBA_STATUS        = 1,  ///< Positive values (no high bit set) are successful, but with info
   ZBA_UNKNOWN_ERROR = 0xFFFFFFFF,  ///< negative values are errors
 
@@ -26,6 +28,7 @@ enum class Result : uint32_t
   ZBA_INVALID_COMMAND_LINE = 0x80000003,
   ZBA_ASSERTION_FAILED     = 0x80000004,
   ZBA_INVALID_RANGE        = 0x80000005,
+  ZBA_INVALID_PARAMETER    = 0x80000006,
 
   ZBA_CAMERA_ERROR       = 0x80001000,  ///< Camera errors
   ZBA_CAMERA_OPEN_FAILED = 0x80001001,

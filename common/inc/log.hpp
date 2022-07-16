@@ -39,18 +39,16 @@ void ZBA_SetLogLevel(ZBA_LL logLevel);
 /// \param msg - message and printf style formatting string
 /// \param ... - printf style arguments
 
-#define ZBA_TIMER(name, msg, ...) \
-  zba_stack_timer name(zba_source_loc::current(), msg __VA_OPT__(, ) __VA_ARGS__)
-#define ZBA_LOG(msg, ...) \
-  zba_log(ZBA_LL::LL_INFO, zba_source_loc::current(), msg __VA_OPT__(, ) __VA_ARGS__)
+#define ZBA_TIMER(name, ...) \
+  zba_stack_timer name(zba_source_loc::current() __VA_OPT__(, ) __VA_ARGS__)
+#define ZBA_LOG(...) zba_log(ZBA_LL::LL_INFO, zba_source_loc::current() __VA_OPT__(, ) __VA_ARGS__)
 
 /// Error log
-#define ZBA_ERR(msg, ...) \
-  zba_log(ZBA_LL::LL_ERROR, zba_source_loc::current(), msg __VA_OPT__(, ) __VA_ARGS__)
+#define ZBA_ERR(...) zba_log(ZBA_LL::LL_ERROR, zba_source_loc::current() __VA_OPT__(, ) __VA_ARGS__)
 
 /// Error log with errno
-#define ZBA_ERRNO(msg, ...) \
-  zba_log_errno(ZBA_LL::LL_ERROR, zba_source_loc::current(), msg __VA_OPT__(, ) __VA_ARGS__)
+#define ZBA_ERRNO(...) \
+  zba_log_errno(ZBA_LL::LL_ERROR, zba_source_loc::current() __VA_OPT__(, ) __VA_ARGS__)
 
 /// This logs types that have an operator<< overload but not a string conversion.
 /// \param obj - object to log, must have operator<< overload

@@ -12,6 +12,7 @@
 #include "log.hpp"
 #include "param.hpp"
 #include "platform.hpp"
+#include "system_utils.hpp"
 
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Devices.Enumeration.h>
@@ -102,6 +103,7 @@ class CameraPlatform::Impl
   VideoDeviceController videoDevCtrl_;  ///< VideoDeviceController for the device
   std::mutex paramControlMutex_;        ///< Lock for map
   std::map<std::string, MediaDeviceControl> paramControlMap_;  ///< maps param names to controls
+  FILETIME cameraTimeBase_;
 };
 
 // CameraWin main class
@@ -303,6 +305,22 @@ CameraPlatform::Impl::Impl(CameraPlatform* parent)
   auto devices     = Windows::Media::Capture::Frames::MediaFrameSourceGroup::FindAllAsync().get();
   bool initialized = false;
 
+  // Find the base time to work with for capture stamps relative to our clock and save it
+  // for calculating hardware timestamps
+  LARGE_INTEGER counter1, counter2;
+  FILETIME baseSystemTime;
+  GetSystemTimePreciseAsFileTime(&baseSystemTime);
+  QueryPerformanceCounter(&counter1);
+  QueryPerformanceCounter(&counter2);
+
+  uint64_t cameraTimeOffset = counter1.QuadPart - (counter2.QuadPart - counter1.QuadPart);
+  ULARGE_INTEGER ul;
+  ul.HighPart = baseSystemTime.dwHighDateTime;
+  ul.LowPart  = baseSystemTime.dwLowDateTime;
+  ul.QuadPart -= cameraTimeOffset;
+  cameraTimeBase_.dwHighDateTime = ul.HighPart;
+  cameraTimeBase_.dwLowDateTime  = ul.LowPart;
+
   for (auto curDevice : devices)
   {
     std::string deviceId = winrt::to_string(curDevice.Id());
@@ -408,12 +426,18 @@ void CameraPlatform::Impl::OnFrame(
 {
   if (auto frame = reader.TryAcquireLatestFrame())
   {
-    // {TODO} Get an accurate timestamp from the frame
-    // {HACK} We'll likely have to convert between clocks.
-    // See this: https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
-    // For now, stamp when we acquire it.
-    TimeStamp frame_time = TimeStampNow();
+    auto mfref = frame.VideoMediaFrame().FrameReference();
+    // Get the timestamp for the hardware start of frame
+    ULARGE_INTEGER hw_timestamp;
+    hw_timestamp.HighPart = cameraTimeBase_.dwHighDateTime;
+    hw_timestamp.LowPart  = cameraTimeBase_.dwLowDateTime;
+    hw_timestamp.QuadPart += mfref.SystemRelativeTime().Value().count();
+    FILETIME hw_filetime;
+    hw_filetime.dwHighDateTime = hw_timestamp.HighPart;
+    hw_filetime.dwLowDateTime  = hw_timestamp.LowPart;
+    TimeStamp hw_frame_time    = FILETIME_to_system_clock(hw_filetime);
 
+    // Now get the image
     auto bitmap        = frame.VideoMediaFrame().SoftwareBitmap();
     auto format_if_set = parent_.GetFormat();
 
@@ -484,7 +508,7 @@ void CameraPlatform::Impl::OnFrame(
 
       ref.Close();
       bmpBuffer.Close();
-      parent_.cur_frame_.set_timestamp(frame_time);
+      parent_.cur_frame_.set_timestamp(hw_frame_time);
       parent_.OnFrameReceived(parent_.cur_frame_);
     }
     else

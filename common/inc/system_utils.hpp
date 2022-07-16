@@ -3,10 +3,19 @@
 #ifndef LIGHTBOX_ZEBRAL_COMMON_SYSTEM_UTILS_HPP_
 #define LIGHTBOX_ZEBRAL_COMMON_SYSTEM_UTILS_HPP_
 
+#include <chrono>
 #include "platform.hpp"
 
 namespace zebral
 {
+#if _WIN32
+// Convert between c++ clock and Windows FILETIME.
+// This is based on code by Billy O'Neal
+// https://github.com/HowardHinnant/date/wiki/Examples-and-Recipes#FILETIME
+std::chrono::system_clock::time_point FILETIME_to_system_clock(FILETIME fileTime);
+FILETIME system_clock_to_FILETIME(std::chrono::system_clock::time_point systemPoint);
+#endif
+
 #if __linux__
 /// Retrieves USB information for a device given the device type info
 /// \param device_file - filename of the device, e.g. "video0" or "ttyACM0"
