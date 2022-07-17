@@ -12,10 +12,13 @@
 
 namespace zebral
 {
-/// TimeStamp used by camera calls (high_resolution_clock)
-using TimeStamp = std::chrono::high_resolution_clock::time_point;
+// Select clock for timestamps
+using Clock = std::chrono::system_clock;
+
+/// TimeStamp used by camera calls
+using TimeStamp = zebral::Clock::time_point;
 /// Get the timestamp right now
-/// \return TimeStamp - current time_point on the high resolution clock
+/// \return TimeStamp - current time_point on the chosen clock
 TimeStamp TimeStampNow();
 
 /// Simple image class.

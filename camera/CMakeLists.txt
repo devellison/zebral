@@ -35,6 +35,7 @@ set(SRC
     src/buffer_memmap.cpp
     src/convert.cpp
     src/param.cpp
+    src/camera_util.cpp
 )
 
 set(INC
@@ -46,6 +47,7 @@ set(INC
     inc/camera.hpp
     inc/param.hpp
     inc/convert.hpp
+    inc/camera_util.hpp
 )
 
 add_library(${PROJECT_NAME} ${SRC} ${INC})

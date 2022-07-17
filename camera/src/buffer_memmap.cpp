@@ -75,13 +75,14 @@ void BufferGroup::QueueAll()
   }
 }
 
-BufferMemmap::BufferMemmap() : index_(0), length_(0), data_(nullptr) {}
+BufferMemmap::BufferMemmap() : index_(0), length_(0), data_(nullptr), timestamp_{0, 0} {}
 
 BufferMemmap::BufferMemmap(DeviceV4L2Ptr& device, int idx)
     : device_(device),
       index_(idx),
       length_(0),
-      data_(nullptr)
+      data_(nullptr),
+      timestamp_{0, 0}
 {
   // allocate new
   struct v4l2_buffer buffer;
@@ -110,6 +111,7 @@ BufferMemmap::BufferMemmap(BufferMemmap&& buf) : index_(0), length_(0), data_(nu
   std::swap(index_, buf.index_);
   std::swap(length_, buf.length_);
   std::swap(data_, buf.data_);
+  std::swap(timestamp_, buf.timestamp_);
 }
 
 BufferMemmap::~BufferMemmap()
@@ -147,6 +149,7 @@ bool BufferMemmap::Dequeue()
     if (EAGAIN == errno) return false;
     ZBA_THROW_ERRNO("Error dequeuing buffer", Result::ZBA_CAMERA_ERROR);
   }
+  timestamp_ = buffer.timestamp;
   return true;
 }
 

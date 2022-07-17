@@ -49,11 +49,17 @@ class BufferMemmap
   /// \returns true on success, false if we don't have a buffer.
   bool Dequeue();
 
+  timeval GetTimestamp()
+  {
+    return timestamp_;
+  }
+
  protected:
   DeviceV4L2Ptr device_;  ///< Device handle
   int index_;             ///< Buffer index
   size_t length_;         ///< Length of buffer in bytes
   void* data_;            ///< Ptr to buffer
+  timeval timestamp_;     ///< hardware timestamp
 };
 
 /// This class handles all the buffers for

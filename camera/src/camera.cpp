@@ -8,7 +8,7 @@ namespace zebral
 {
 TimeStamp TimeStampNow()
 {
-  return std::chrono::high_resolution_clock::now();
+  return zebral::Clock::now();
 }
 
 Camera::Camera(const CameraInfo& info)

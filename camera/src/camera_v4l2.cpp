@@ -108,6 +108,7 @@ class CameraPlatform::Impl
   std::map<std::string, std::shared_ptr<Param>> paramAutoParams_;  ///< name->param
 
   std::map<int, std::string> controlParamMap_;  //
+  double cameraTimeBase_;
 };
 
 bool CameraPlatform::Impl::AddParameter(v4l2_queryctrl& queryctrl, const std::string& override_name,
@@ -378,8 +379,9 @@ FormatInfo CameraPlatform::OnSetFormat(const FormatInfo& info)  // info)
   v4l2_frmsizeenum vsize;
   FormatInfo fmt_info = info;
 
-  auto findFormat = [&](const v4l2_fmtdesc& fmtdesc, const v4l2_frmsizeenum& frmsize,
-                        const FormatInfo& checkFmt) {
+  auto findFormat =
+      [&](const v4l2_fmtdesc& fmtdesc, const v4l2_frmsizeenum& frmsize, const FormatInfo& checkFmt)
+  {
     if (info.Matches(checkFmt))
     {
       fmt_info = checkFmt;
@@ -480,8 +482,16 @@ void CameraPlatform::Impl::CaptureThread()
     // Get a buffer
     if (!buffers_->Get(bufIdx).Dequeue()) continue;
 
-    /// {TODO} this needs to be pulled from the frame/system itself if available.
-    TimeStamp frame_timestamp = TimeStampNow();
+    // Get the buffer timestamp, convert to seconds and add to our time base
+    auto hwTimestamp = buffers_->Get(bufIdx).GetTimestamp();
+    double frameTimeOffset =
+        hwTimestamp.tv_sec + static_cast<double>(hwTimestamp.tv_usec) / 1000000.0;
+    double epochSec = cameraTimeBase_ + frameTimeOffset;
+
+    // Now convert that back into a TimeStamp (time_point on our current clock)
+    std::chrono::duration<double, std::ratio<1>> epochSecPoint(epochSec);
+    auto since_epoch = std::chrono::duration_cast<zebral::Clock::duration>(epochSecPoint);
+    TimeStamp frame_timestamp(since_epoch);
 
     auto format_if_set = parent_.GetFormat();
     if (format_if_set)
@@ -566,8 +576,8 @@ CameraPlatform::Impl::Impl(CameraPlatform* parent)
               Result::ZBA_CAMERA_OPEN_FAILED);
   }
 
-  auto saveFormat = [this](const v4l2_fmtdesc&, const v4l2_frmsizeenum&,
-                           const FormatInfo& fmt_info) {
+  auto saveFormat = [this](const v4l2_fmtdesc&, const v4l2_frmsizeenum&, const FormatInfo& fmt_info)
+  {
     if (parent_.IsFormatSupported(fmt_info.format))
     {
       parent_.info_.AddFormat(fmt_info);
@@ -575,6 +585,21 @@ CameraPlatform::Impl::Impl(CameraPlatform* parent)
     parent_.AddAllModeEntry(fmt_info);
     return true;
   };
+
+  // Get offset of clock
+  struct timeval timeSinceEpoch;
+  struct timespec timeSinceBoot;
+  gettimeofday(&timeSinceEpoch, NULL);
+  clock_gettime(CLOCK_MONOTONIC, &timeSinceBoot);
+
+  double secondsSinceEpoch =
+      timeSinceEpoch.tv_sec + static_cast<double>(timeSinceEpoch.tv_usec) / 1000000.0;
+
+  double secondsSinceBoot =
+      timeSinceBoot.tv_sec + static_cast<double>(timeSinceBoot.tv_nsec) / 1000000000.0;
+
+  cameraTimeBase_ = secondsSinceEpoch - secondsSinceBoot;
+
   EnumerateModes(saveFormat);
   EnumerateControls();
 }
