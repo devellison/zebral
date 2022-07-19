@@ -34,13 +34,13 @@ std::string to_string(Result result)
   return ss.str();
 }
 
+#if _WIN32
 // Without this, we should be largely old winapi free...
 // But in testing it's annoying if running it terminates without a useful message.
 #ifndef CATCH_UNHANDLED_SEH
-#define CATCH_UNHANDLED_SEH 0
+#define CATCH_UNHANDLED_SEH 1
 #endif
 
-#if _WIN32
 #if CATCH_UNHANDLED_SEH
 #include <windows.h>
 // Windows SEH handler

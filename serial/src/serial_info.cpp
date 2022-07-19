@@ -49,7 +49,7 @@ std::ostream& operator<<(std::ostream& os, const SerialInfo& s)
   {
     deviceOut += zba_format(" ({:x}:{:x})", s.vid, s.pid);
   }
-  os << deviceOut << std::endl;
+  os << deviceOut;
   return os;
 }
 }  // namespace zebral

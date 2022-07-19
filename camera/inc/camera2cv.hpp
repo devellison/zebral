@@ -81,7 +81,8 @@ class Converter
     }
 
     return CameraFrame(frame.cols, frame.rows, frame.channels(),
-                       static_cast<int>(frame.elemSize1()), is_signed, is_float,TimeStampNow(), frame.data);
+                       static_cast<int>(frame.elemSize1()), is_signed, is_float, TimeStampNow(),
+                       frame.data);
   }
 
   /// Retrieves the appropriate OpenCV type from the CameraFrame.

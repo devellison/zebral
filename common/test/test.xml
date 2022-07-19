@@ -1,0 +1,6 @@
+<XMLTest>
+  <FirstObject name="George" color="magenta">
+    <ChildObject/>
+    <AnotherChildObject name="SomeName"/>
+  </FirstObject>
+</XMLTest>

@@ -11,11 +11,14 @@
 #include <cmath>
 #include <filesystem>
 
+#include "args.hpp"
+#include "config.hpp"
 #include "errors.hpp"
 #include "find_files.hpp"
 #include "gtest/gtest.h"
 #include "log.hpp"
 #include "platform.hpp"
+#include "xml_factory.hpp"
 
 using namespace zebral;
 
@@ -49,23 +52,35 @@ TEST(CommonTests, ErrorsAndResults)
 TEST(CommonTests, FindFiles)
 {
   ZBA_LOG("Current Dir: {}", std::filesystem::current_path().string().c_str());
-  /**
-   * {TODO} Need to set up some tests for find file for xplat.
-   */
-  /*
-  auto video_devs = FindFiles("/dev/", "video([0-9]+)");
-  for (auto curMatch : video_devs)
+
+  auto xml_files       = FindFiles(".", "([a-zA-Z0-9_]+)\\.xml$");
+  bool found_good_test = false;
+  bool found_bad_test  = false;
+  for (auto curMatch : xml_files)
   {
-   std::string path = curMatch.dir_entry.path().string();
-    ZBA_LOG("Checking {}", path.c_str());
-    for (size_t i = 0; i < curMatch.matches.size(); ++i)
+    if (curMatch.dir_entry.path().filename() == "test.xml")
     {
-      ZBA_LOG("Match {}: {}",i,curMatch.matches[i].c_str());
+      found_good_test = true;
     }
-    int idx = std::stoi(curMatch.matches[1]);
-    ZBA_LOG("idx: {}",idx);
+    if (curMatch.dir_entry.path().filename() == "badtest.xml")
+    {
+      found_bad_test = true;
+    }
   }
-  */
+  ASSERT_TRUE(found_good_test);
+  ASSERT_TRUE(found_bad_test);
+}
+
+TEST(CommonTests, XmlFactory)
+{
+  XMLFactory factory;
+  auto configObj = ParseXml("test.xml", factory);
+  EXPECT_TRUE(configObj != nullptr);
+  if (configObj)
+  {
+    configObj->Dump();
+    delete configObj;
+  }
 }
 
 int main(int argc, char** argv)

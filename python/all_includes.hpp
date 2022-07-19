@@ -16,5 +16,5 @@
 #include <common/inc/results.hpp>
 #include <common/inc/store_error.hpp>
 #include <common/inc/system_utils.hpp>
-#include <serial/inc/serial_channel.hpp>
 #include <serial/inc/serial_info.hpp>
+#include <serial/inc/serial_line_channel.hpp>
