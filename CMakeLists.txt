@@ -81,6 +81,7 @@ if(MSVC)
 else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
   find_package(fmt REQUIRED)
+  find_package(LibXml2)
 endif()
 
 # Each of these makes a static library that can be individually included.

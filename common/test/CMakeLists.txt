@@ -19,3 +19,8 @@ target_link_libraries(
   common_tests gtest_main zebralcommon::zebralcommon ${EXTRA_LIBS}
 )
 gtest_add_tests(TARGET common_tests)
+
+# Copy our test files into the binary dir
+file(GLOB TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.xml")
+
+file(COPY ${TEST_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

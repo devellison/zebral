@@ -2,13 +2,13 @@
 #include "gtest/gtest.h"
 #include "log.hpp"
 #include "platform.hpp"
-#include "serial_channel.hpp"
+#include "serial_line_channel.hpp"
 
 using namespace zebral;
 
 TEST(SerialTest, Enumeration)
 {
-  auto devices = SerialChannel::Enumerate();
+  auto devices = SerialLineChannel::Enumerate();
   for (const auto& curDevice : devices)
   {
     std::cout << curDevice << std::endl;

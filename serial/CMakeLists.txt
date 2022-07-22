@@ -1,16 +1,27 @@
 # ZebralSerial library Simple serial comms
+cmake_minimum_required(VERSION 3.20)
+
 project(
   zebralserial
   VERSION ${ZEBRAL_VERSION}
   LANGUAGES CXX
 )
 
+if(MSVC)
+  add_compile_options(/W4 /WX /Zc:preprocessor)
+  set(EXTRA_LIBS Strmiids.lib Mfplat.lib Mf.lib)
+  # add_link_options(/DELAYLOAD:MF.lib)
+else()
+  add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-c11-extensions)
+  set(EXTRA_LIBS fmt::fmt)
+endif()
+
 # Add serial library
-set(SRC src/serial_channel.cpp src/serial_linux.cpp src/serial_winrt.cpp
-        src/serial_info.cpp
+set(SRC src/serial_line_channel.cpp src/serial_line_channel_linux.cpp
+        src/serial_line_channel_winrt.cpp src/serial_info.cpp
 )
 
-set(INC inc/serial_channel.hpp inc/serial_info.hpp)
+set(INC inc/serial_line_channel.hpp inc/serial_info.hpp)
 
 add_library(${PROJECT_NAME} ${SRC} ${INC})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

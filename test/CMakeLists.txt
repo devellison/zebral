@@ -23,7 +23,11 @@ if(MSVC)
   else()
     set(ZEBRAL_DLL_PATH "${DLL_PATH}/${CMAKE_BUILD_TYPE}")
   endif()
-  gtest_add_tests(TARGET zebral_test WORKING_DIRECTORY "${ZEBRAL_DLL_PATH}")
+  gtest_add_tests(
+    TARGET zebral_test
+    WORKING_DIRECTORY "${ZEBRAL_DLL_PATH}"
+    EXTRA_ARGS ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 else()
-  gtest_add_tests(TARGET zebral_test)
+  gtest_add_tests(TARGET zebral_test EXTRA_ARGS ${CMAKE_CURRENT_SOURCE_DIR})
 endif()

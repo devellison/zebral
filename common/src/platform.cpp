@@ -30,6 +30,10 @@ Platform::Platform()
 
 #if _WIN32
   winrt::init_apartment();
+
+  // Enable console colors, since our logging uses them.
+  SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),
+                 ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
 }
 

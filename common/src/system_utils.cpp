@@ -55,12 +55,17 @@ bool GetUSBInfo(const std::string& device_file, const std::string& driverType,
   std::string driverSearch = zba_format("/sys/bus/usb/drivers/{}/", driverType);
   std::string devSearch    = zba_format("^{}([0-9]*)$", devicePrefix);
 
+  if (!std::filesystem::exists(driverSearch)) return false;
+
   auto usbDevAddrs = FindFiles(driverSearch, "^([0-9-.]*):([0-9-.]*)$");
   for (auto& curDevAddr : usbDevAddrs)
   {
-    if (!std::filesystem::exists(curDevAddr.dir_entry.path() / deviceType))
+    if (!deviceType.empty())
     {
-      continue;
+      if (!std::filesystem::exists(curDevAddr.dir_entry.path() / deviceType))
+      {
+        continue;
+      }
     }
 
     auto usbVideoNames = FindFiles(curDevAddr.dir_entry.path() / deviceType, devSearch);

@@ -12,16 +12,18 @@
 #include <winrt/base.h>
 #include <format>
 #include <source_location>
-#define zba_format     std::format
-#define zba_vformat    std::vformat
-#define zba_make_args  std::make_format_args
-#define zba_source_loc std::source_location
+#define zba_format           std::format
+#define zba_vformat          std::vformat
+#define zba_make_args        std::make_format_args
+#define zba_source_loc       std::source_location
+#define zba_strcasecmp(x, y) _stricmp(x, y)
 #elif __linux__
 #include <fmt/format.h>
-#define zba_format     fmt::format
-#define zba_vformat    fmt::vformat
-#define zba_make_args  fmt::make_format_args
-#define zba_source_loc zebral::source_location
+#define zba_format           fmt::format
+#define zba_vformat          fmt::vformat
+#define zba_make_args        fmt::make_format_args
+#define zba_source_loc       zebral::source_location
+#define zba_strcasecmp(x, y) strcasecmp(x, y)
 #endif
 
 namespace zebral
