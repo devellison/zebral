@@ -47,6 +47,7 @@ find_package(Threads REQUIRED)
 find_package(OpenCV REQUIRED core)
 find_package(Doxygen REQUIRED dot OPTIONAL_COMPONENTS mscgen dia)
 find_package(OpenMP)
+find_package(JPEG)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
   # Setup gtest Note - this seems kinda slow/repeatedly run. Moving to global
@@ -88,6 +89,7 @@ endif()
 add_subdirectory(common)
 add_subdirectory(camera)
 add_subdirectory(serial)
+add_subdirectory(network)
 add_subdirectory(python)
 add_subdirectory(app)
 
@@ -127,6 +129,7 @@ if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     ${CMAKE_CURRENT_SOURCE_DIR}/README.md
     ${PROJECT_NAME}_docs
     ${CMAKE_CURRENT_SOURCE_DIR}/camera/README.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/network/README.md
     ${CMAKE_CURRENT_SOURCE_DIR}/serial/README.md
     ${CMAKE_CURRENT_SOURCE_DIR}/common/src
     ${CMAKE_CURRENT_SOURCE_DIR}/common/inc
@@ -149,12 +152,12 @@ add_library(${PROJECT_NAME} SHARED src/zebral.cpp)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(
   ${PROJECT_NAME} PUBLIC inc ${fmt_INCLUDE_DIRS} zebralcommon::zebralcommon
-                         zebralcam::zebralcam zebralserial::zebralserial
+                         zebralcam::zebralcam zebralserial::zebralserial zebralnetwork::zebralnetwork
 )
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC ${EXTRA_LIBS} Threads::Threads zebralcommon::zebralcommon
-         zebralcam::zebralcam zebralserial::zebralserial
+         zebralcam::zebralcam zebralserial::zebralserial zebralnetwork::zebralnetwork
 )
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)

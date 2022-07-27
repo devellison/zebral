@@ -47,8 +47,10 @@ enum class Result : uint32_t
   ZBA_FILE_ERROR          = 0x80004000,
   ZBA_FILE_DOES_NOT_EXIST = 0x80004001,
 
-  ZBA_XML_ERROR        = 0x80005000,
-  ZBA_XML_PARSE_FAILED = 0x80005001
+  ZBA_XML_ERROR         = 0x80005000,
+  ZBA_XML_PARSE_FAILED  = 0x80005001,
+  ZBA_JPEG_ERROR        = 0x80006000,
+  ZBA_JPEG_DECODE_ERROR = 0x80006001
 };
 
 /// Return a result as an unsigned

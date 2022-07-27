@@ -146,6 +146,8 @@ bool Camera::IsFormatSupported(const std::string& fourcc)
   /// Right now, the only other thing I have is MJPG.
   if (fourcc == "NV12") return true;
 
+    // Having problems with this on windows, we simply don't get frames.
+    // if (fourcc == "MJPG") return true;
 #if _WIN32
   if (fourcc == "L8  ") return true;
   if (fourcc == "D16 ") return true;

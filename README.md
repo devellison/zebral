@@ -27,6 +27,7 @@ but some of the tests and utilities DO require it.
     - Set up OpenCV 4.5.5, including videoio, highgui, and core 
       (current binary release didn't seem to have these, but choco did)
     - Doxygen, graphviz, cmake-format (pip install), clang-format
+    - libCurl (vcpkg install curl)
   - Linux:
     - Currently using Clang-12 (CMake 3.23)
     - Using OpenCV 4.2 from Ubuntu's distribution

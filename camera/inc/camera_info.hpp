@@ -70,6 +70,14 @@ struct CameraInfo
   /// No format selected
   static constexpr int NO_FORMAT_SELECTED = -1;
 
+  CameraInfo(const std::string& cam_name, const std::string& uri)
+      : index(0),
+        name(cam_name),
+        path(uri),
+        selected_format(NO_FORMAT_SELECTED)
+  {
+  }
+
   /// CameraInfo ctor
   /// \param cam_idx Index of camera
   /// \param cam_name Name of camera

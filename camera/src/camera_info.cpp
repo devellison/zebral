@@ -116,6 +116,8 @@ int ChannelsFromFourCC(const std::string& fmt_format)
     case FOURCCTOUINT32("YUYV"):
 #endif
       return 3;
+    case FOURCCTOUINT32("MJPG"):
+      return 3;
     case FOURCCTOUINT32("NV12"):
       return 3;
     case FOURCCTOUINT32("RGB "):
@@ -153,6 +155,8 @@ int BytesPPPCFromFourCC(const std::string& fmt_format)
       return 1;
     case FOURCCTOUINT32("RGB "):
     case FOURCCTOUINT32("BGR "):
+      return 1;
+    case FOURCCTOUINT32("MJPG"):
       return 1;
     case FOURCCTOUINT32("RGBA"):
     case FOURCCTOUINT32("BGRA"):

@@ -131,7 +131,12 @@ void CameraPlatform::Impl::Start()
   if (reader_)
   {
     reader_token_ = reader_.FrameArrived({this, &Impl::OnFrame});
-    reader_.StartAsync().get();
+    auto result   = reader_.StartAsync().get();
+    if (result != MediaFrameReaderStartStatus::Success)
+    {
+      ZBA_THROW("Failed to start media reader! {}" + std::to_string(static_cast<int>(result)),
+                Result::ZBA_CAMERA_ERROR);
+    }
     started_ = true;
   }
 }
@@ -266,6 +271,7 @@ FormatInfo CameraPlatform::OnSetFormat(const FormatInfo& info)
 
       // Set the format
       mediaFrameSource.SetFormatAsync(curFormat).get();
+
       winrt::hstring fourCC = FilterFormat(formatInfo.format);
 
       /// {TODO} This switches decoding on and off, but should also be able to switch
@@ -278,10 +284,12 @@ FormatInfo CameraPlatform::OnSetFormat(const FormatInfo& info)
                   ((decode_ == DecodeType::SYSTEM) ? MediaEncodingSubtypes::Bgra8() : fourCC))
               .get();
 
+      impl_->reader_.AcquisitionMode(MediaFrameReaderAcquisitionMode::Realtime);
+
       return formatInfo;
     }
   }
-  ZBA_THROW("Could find requested format.", Result::ZBA_CAMERA_ERROR);
+  ZBA_THROW("Couldn't find requested format.", Result::ZBA_CAMERA_ERROR);
 }
 
 FormatInfo MediaFrameFormatToFormat(const MediaFrameFormat& curFormat)
@@ -459,6 +467,8 @@ void CameraPlatform::Impl::OnFrame(
         auto interop     = ref.as<IMemoryBufferByteAccess>();
         check_hresult(interop->GetBuffer(&dataPtr, &dataLen));
 
+        // parent_.CopyRawBuffer(dataPtr, src_stride);
+        // Now we're hardcoded to Rgb24, yay. ooh... nope. Get null frame refs.
         BGRAToBGRFrame(dataPtr, parent_.cur_frame_, src_stride);
       }
       else if (parent_.decode_ == DecodeType::INTERNAL)
@@ -491,6 +501,10 @@ void CameraPlatform::Impl::OnFrame(
         else if (format.format == "L8  ")
         {
           GreyToFrame(srcPtr, parent_.cur_frame_, src_stride);
+        }
+        else if (format.format == "MJPG")
+        {
+          JPEGToBGRFrame(srcPtr, dataLen, parent_.cur_frame_, src_stride);
         }
         else
         {

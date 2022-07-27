@@ -57,3 +57,15 @@ target_link_libraries(
   zbaterm zebralcommon::zebralcommon zebralserial::zebralserial
 )
 install(TARGETS zbaterm DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+
+add_executable(zbaget zebral_get.cpp)
+target_include_directories(
+  zbaget PUBLIC zebralcommon::zebralcommon zebralnetwork::zebralnetwork
+                 ${fmt_INCLUDE_DIRS}
+)
+target_compile_features(zbaget PUBLIC cxx_std_20)
+target_link_libraries(
+  zbaget zebralcommon::zebralcommon zebralnetwork::zebralnetwork
+)
+install(TARGETS zbaget DESTINATION ${CMAKE_INSTALL_BINDIR})

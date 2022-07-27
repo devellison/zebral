@@ -36,6 +36,7 @@ set(SRC
     src/convert.cpp
     src/param.cpp
     src/camera_util.cpp
+    src/camera_http.cpp
 )
 
 set(INC
@@ -48,16 +49,17 @@ set(INC
     inc/param.hpp
     inc/convert.hpp
     inc/camera_util.hpp
+    inc/camera_http.hpp
 )
 
 add_library(${PROJECT_NAME} ${SRC} ${INC})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(
-  ${PROJECT_NAME} PUBLIC inc ${fmt_INCLUDE_DIRS} zebralcommon::zebralcommon
+  ${PROJECT_NAME} PUBLIC inc ${fmt_INCLUDE_DIRS} zebralcommon::zebralcommon zebralnetwork::zebralnetwork ${JPEG_INCLUDE_DIR}
 )
 target_link_libraries(
   ${PROJECT_NAME} PUBLIC ${EXTRA_LIBS} Threads::Threads
-                         zebralcommon::zebralcommon
+                         zebralcommon::zebralcommon zebralnetwork::zebralnetwork ${JPEG_LIBRARY}
 )
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 

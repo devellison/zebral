@@ -84,6 +84,7 @@ void YUY2ToBGRFrame(const uint8_t* src, CameraFrame& frame, int stride);
 void NV12ToBGRFrame(const uint8_t* src, CameraFrame& frame, int stride);
 /// Converts BGRA to BGR in an existing frame
 void BGRAToBGRFrame(const uint8_t* src, CameraFrame& frame, int stride);
+void JPEGToBGRFrame(const uint8_t* src, size_t length, CameraFrame& frame, int stride);
 
 /// Creates a frame and converts YUY2 into it
 CameraFrame YUY2ToBGRFrame(const uint8_t* src, int width, int height, int stride);
@@ -91,6 +92,7 @@ CameraFrame YUY2ToBGRFrame(const uint8_t* src, int width, int height, int stride
 CameraFrame NV12ToBGRFrame(const uint8_t* src, int width, int height, int stride);
 /// Creates a frame and converts BGRA into it
 CameraFrame BGRAToBGRFrame(const uint8_t* src, int width, int height, int stride);
+CameraFrame JPEGToBGRFrame(const uint8_t* src, size_t length, int width, int height, int stride);
 
 void GreyRow(const uint8_t* src, uint8_t* dst, int stride);
 void GreyToFrame(const uint8_t* src, CameraFrame& out, int stride);

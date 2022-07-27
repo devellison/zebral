@@ -4,6 +4,8 @@
 #include <cmath>
 #include <memory>
 #include "camera_frame.hpp"
+#include "errors.hpp"
+#include "jpeglib.h"
 #include "log.hpp"
 
 namespace zebral
@@ -155,6 +157,65 @@ void BGRAToBGRFrame(const uint8_t* src, CameraFrame& out, int stride)
   }
 }
 
+void jpegErrorExit(j_common_ptr cinfo)
+{
+  char jpegLastErrorMsg[JMSG_LENGTH_MAX];
+  (*(cinfo->err->format_message))(cinfo, jpegLastErrorMsg);
+  ZBA_THROW(jpegLastErrorMsg, Result::ZBA_JPEG_DECODE_ERROR);
+}
+
+void JPEGToBGRFrame(const uint8_t* src, size_t length, CameraFrame& out, int)
+{
+  struct jpeg_decompress_struct cinfo;
+  struct jpeg_error_mgr err;
+  cinfo.err = jpeg_std_error(&err);
+
+  jpeg_create_decompress(&cinfo);
+  jpeg_mem_src(&cinfo, src, static_cast<uint32_t>(length));
+  jpeg_read_header(&cinfo, true);
+  jpeg_start_decompress(&cinfo);
+
+  try
+  {
+    if ((cinfo.output_width != static_cast<uint32_t>(out.width())) ||
+        (cinfo.output_height != static_cast<uint32_t>(out.height())) ||
+        (cinfo.num_components != out.channels()))
+    {
+      ZBA_LOG("JPEG does not match expected! {},{} {} vs {},{} {}", cinfo.output_width,
+              cinfo.output_height, cinfo.num_components, out.width(), out.height(), out.channels());
+
+      // Reset frame to match for now - we may want to do RGB/RGBA conversion here
+      out.reset(cinfo.output_width, cinfo.output_height, cinfo.num_components, 1, false, false);
+    }
+
+    auto dst_ptr   = out.data();
+    int dst_stride = out.channels() * out.bytes_per_channel() * out.width();
+
+    while (cinfo.output_scanline < static_cast<uint32_t>(out.height()))
+    {
+      uint8_t* rowptr = dst_ptr + cinfo.output_scanline * dst_stride;
+      jpeg_read_scanlines(&cinfo, &rowptr, 1);
+
+      /// {HACK} So - libjpeg is decoding to RGB, we need BGR...
+      /// There's a colorspace option in libjpeg-turbo, but it isn't working for me at
+      /// the moment and would only be for turbo anyway.... so do conversion here for now.
+      for (int x = 0; x < out.width(); ++x)
+      {
+        std::swap(rowptr[x * 3], rowptr[x * 3 + 2]);
+      }
+    }
+  }
+  catch (const Error& e)
+  {
+    // For now, do the cleanup, then rethrow
+    jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
+    throw e;
+  }
+  jpeg_finish_decompress(&cinfo);
+  jpeg_destroy_decompress(&cinfo);
+}
+
 CameraFrame YUY2ToBGRFrame(const uint8_t* src, int width, int height, int stride)
 {
   CameraFrame out(width, height, 3, 1, false, false);
@@ -172,6 +233,13 @@ CameraFrame BGRAToBGRFrame(const uint8_t* src, int width, int height, int stride
 {
   CameraFrame out(width, height, 3, 1, false, false);
   BGRAToBGRFrame(src, out, stride);
+  return out;
+}
+
+CameraFrame JPEGToBGRFrame(const uint8_t* src, size_t length, int width, int height, int stride)
+{
+  CameraFrame out(width, height, 3, 1, false, false);
+  JPEGToBGRFrame(src, length, out, stride);
   return out;
 }
 
