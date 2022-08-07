@@ -90,7 +90,8 @@ add_subdirectory(common)
 add_subdirectory(camera)
 add_subdirectory(serial)
 add_subdirectory(network)
-add_subdirectory(python)
+# Put python on hold for now as the API is changing rapidly.
+# add_subdirectory(python)
 add_subdirectory(app)
 
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})

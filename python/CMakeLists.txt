@@ -17,7 +17,7 @@ endif()
 pybind11_add_module(${PROJECT_NAME} zebralpy.cpp)
 target_link_libraries(
   ${PROJECT_NAME} PRIVATE zebralcommon::zebralcommon zebralserial::zebralserial
-                          zebralcam::zebralcam
+                          zebralcam::zebralcam zebralnetwork::zebralnetwork
 )
 
 
