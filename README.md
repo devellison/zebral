@@ -5,10 +5,11 @@ The Zebral Library is currently under active development.
 
 The initial focus is ZebralCam, to provide crossplatform access to web cameras with easy access to controls and hardware identification.  It works now (Windows/Ubuntu), but is still under active development.
 
-So far, there are 3 libraries:
+So far, there are 4 libraries:
  - zebralcommon: Base errors, logging, etc. used in Zebral libraries
  - zebralcam: Provides crossplatform cameras with control options and hardware identification.
  - zebralserial: Will provide some basic serial communications classes
+ - zebralnetwork: This just wraps libcurl up right now for use in the camera library for http and eventually rtsp cameras.
 
 Zebral is being written as a part of the Lightbox project, but it's intended to stand
 alone as well once it's done.
@@ -27,12 +28,15 @@ but some of the tests and utilities DO require it.
     - Set up OpenCV 4.5.5, including videoio, highgui, and core 
       (current binary release didn't seem to have these, but choco did)
     - Doxygen, graphviz, cmake-format (pip install), clang-format
-    - libCurl (vcpkg install curl)
+    - libCurl
+    - libjpeg-turbo
   - Linux:
     - Currently using Clang-12 (CMake 3.23)
     - Using OpenCV 4.2 from Ubuntu's distribution
     - libfmt (on Linux) should be built and installed
     - Google test is downloaded by CMake currently
+    - libCurl
+    - libjpeg-turbo
   - Build tools and deps for both:    
     - CMake v3.20+ (you can get it from kitware for ubuntu)
     - OpenMP (optional, not using it much yet)

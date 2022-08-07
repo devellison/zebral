@@ -20,8 +20,8 @@ BinaryCurlClient::BinaryCurlClient(const std::string &user, const std::string &p
     : curl_(curl_easy_init()),
       user_(user),
       pwd_(pwd),
-      max_length_(0),
       response_code_(0),
+      max_length_(0),
       custom_headers_list_(nullptr)
 {
 }
@@ -87,7 +87,7 @@ int BinaryCurlClient::Get(const std::string &uri, FileReceivedCallback callback,
   // Now generate a list from our headers_
   if (custom_headers_.size())
   {
-    for (const auto curHeader : custom_headers_)
+    for (const auto &curHeader : custom_headers_)
     {
       ZBA_LOG("Adding header: {}", curHeader);
       custom_headers_list_ = curl_slist_append(custom_headers_list_, curHeader.c_str());
