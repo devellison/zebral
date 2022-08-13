@@ -1,4 +1,4 @@
-# ZebralSerial library Simple serial comms
+# ZebralNetwork library 
 cmake_minimum_required(VERSION 3.20)
 
 project(
@@ -31,13 +31,13 @@ set(INC
   inc/binary_curl_client.hpp
 )
 
-add_library(${PROJECT_NAME} ${SRC} ${INC})
+add_library(${PROJECT_NAME} STATIC  ${SRC} ${INC})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(
-  ${PROJECT_NAME} PUBLIC inc ${fmt_INCLUDE_DIRS} zebralcam::zebralcam CURL::libcurl
+  ${PROJECT_NAME} PUBLIC inc ${fmt_INCLUDE_DIRS} zebralcommon::zebralcommon CURL::libcurl
 )
 target_link_libraries(
-  ${PROJECT_NAME} PUBLIC ${EXTRA_LIBS} Threads::Threads zebralcam::zebralcam CURL::libcurl
+  ${PROJECT_NAME} PUBLIC ${EXTRA_LIBS} Threads::Threads zebralcommon::zebralcommon CURL::libcurl
 )
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 

@@ -48,7 +48,7 @@ set(INC
     inc/xml_factory.hpp
 )
 
-add_library(${PROJECT_NAME} ${SRC} ${INC})
+add_library(${PROJECT_NAME} STATIC  ${SRC} ${INC})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PUBLIC inc ${EXTRA_INC})

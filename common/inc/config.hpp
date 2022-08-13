@@ -48,6 +48,15 @@ class ConfigObject
     child->parent_ = this;
     children_.emplace_back(child);
   }
+  template <class T>
+  T GetAttribDef(const std::string& name, const T& defVal, bool useAncestors = true) const
+  {
+    T value = defVal;
+    // If we find the attrib, we return it - otherwise return default value.
+    (void)GetAttrib(name, value, useAncestors);
+
+    return value;
+  }
 
   /// Get an attrib as a value
   template <class T>

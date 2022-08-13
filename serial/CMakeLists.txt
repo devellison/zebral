@@ -23,7 +23,7 @@ set(SRC src/serial_line_channel.cpp src/serial_line_channel_linux.cpp
 
 set(INC inc/serial_line_channel.hpp inc/serial_info.hpp)
 
-add_library(${PROJECT_NAME} ${SRC} ${INC})
+add_library(${PROJECT_NAME} STATIC ${SRC} ${INC})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(
   ${PROJECT_NAME} PUBLIC inc ${fmt_INCLUDE_DIRS} zebralcam::zebralcam
