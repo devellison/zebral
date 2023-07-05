@@ -50,6 +50,7 @@ set(INC
     inc/convert.hpp
     inc/camera_util.hpp
     inc/camera_http.hpp
+    inc/camera2cv.hpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${SRC} ${INC})
